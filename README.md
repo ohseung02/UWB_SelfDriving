@@ -1,43 +1,43 @@
-# 🛰️ UWB 정밀 위치 측정을 활용한 자동 배송 시스템 (Capstone Design)
+# Autonomous Delivery System using UWB Precision Positioning (Capstone Design)
 
-2025학년도 3학년 6학기 공학설계(캡스톤 디자인) 과제로 제작한 **UWB 기반 자율주행 배송 차량** 프로젝트입니다.
-
----
-
-## 💡 프로젝트 소개
-UWB(Ultra-Wideband) 통신 기술을 활용해 실시간으로 위치 데이터를 수집하고, 이를 바탕으로 목적지까지 안전하게 주행하는 배송 시스템을 목표로 개발했습니다. 단순한 GPS보다 실내외에서 더 정밀한 거리 측정이 가능하다는 점에 착안하여 제작했습니다.
-
-### 주요 기능
-* **실시간 위치 트래킹:** UWB Tag와 Anchor 사이의 거리를 계산해 차량 위치 파악
-* **무선 제어 및 자율 주행:** Sender(송신기)에서 보낸 데이터를 바탕으로 Receiver(차량)가 모터를 제어
-* **정밀한 거리 측정:** 기존 센서보다 오차가 적은 DW1000 모듈 활용
+This project was developed as part of the Capstone Design (Engineering Design) course during the 3rd year, 6th semester of the 2025 academic year. It features an autonomous delivery vehicle based on Ultra-Wideband (UWB) technology.
 
 ---
 
-## 🛠 하드웨어 구성
-* **Controller:** Arduino Nano / ESP8266
-* **Sensor:** DW1000 UWB Module
-* **Motor:** DC Motor & Motor Driver (L298N 등)
-* **Communication:** SPI 통신을 통한 데이터 처리
+## Project Introduction
+The goal of this project was to implement an autonomous delivery system that collects real-time location data using UWB technology to ensure safe navigation to a destination. The system was designed based on the premise that UWB provides more precise positioning than conventional GPS in both indoor and outdoor environments.
+
+### Key Features
+* Real-time Location Tracking: Calculates vehicle position by measuring the distance between UWB Tags and Anchors.
+* Wireless Control and Autonomous Navigation: Controls motors based on data sent from the Sender to the Receiver.
+* Precision Distance Measurement: Utilizes the DW1000 module, which offers lower error margins than traditional sensors.
 
 ---
 
-## 📂 저장소 구조
-* `/src`: 아두이노 소스 코드 (송신부/수신부)
-* `/docs`: 프로젝트 발표 PPT 자료, 최종 포스터(PDF)
-* `/media`: 실제 구동 영상 (동작 확인용)
-* `/libs`: 프로젝트에 사용된 전용 라이브러리
+## Hardware Configuration
+* Controller: Arduino Nano / ESP8266
+* Sensor: DW1000 UWB Module
+* Motor: DC Motor & Motor Driver (e.g., L298N)
+* Communication: Data processing via SPI communication
 
 ---
 
-## 🏃 실행 방법
-1. 본 저장소를 다운로드하거나 Clone 합니다.
-2. `libs/` 폴더 안의 라이브러리를 아두이노 라이브러리 폴더에 추가합니다.
-3. `src/sender`와 `src/receiver` 코드를 각각의 보드에 업로드합니다.
-4. 하드웨어 결선은 `docs/` 폴더 내의 발표 자료를 참고해 주세요.
+## Repository Structure
+* /src: Arduino source code (Sender/Receiver)
+* /docs: Presentation materials, final poster (PDF)
+* /media: Demonstration video (operation check)
+* /libs: Dedicated libraries used in the project
 
 ---
 
-## 🎓 프로젝트 정보
-* **제작 기간:** 2025.03 ~ 2025.06
-* **관련 자료:** 본 프로젝트의 상세한 설계 과정은 `docs/` 폴더 내 문서에 정리되어 있습니다.
+## Getting Started
+1. Download or clone this repository.
+2. Add the libraries in the /libs folder to your Arduino libraries directory.
+3. Upload the code from /src/sender and /src/receiver to their respective boards.
+4. Refer to the presentation materials in the /docs folder for hardware wiring diagrams.
+
+---
+
+## Project Information
+* Development Period: March 2025 - June 2025
+* Reference Materials: Detailed design processes are documented in the /docs folder.
