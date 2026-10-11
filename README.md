@@ -1,43 +1,60 @@
-# Autonomous Delivery System using UWB Precision Positioning (Capstone Design)
+# UWB 정밀 측위 기반 실내 자율주행 배송 차량
 
-This project was developed as part of the Capstone Design (Engineering Design) course during the 3rd year, 6th semester of the 2025 academic year. It features an autonomous delivery vehicle based on Ultra-Wideband (UWB) technology.
-
----
-
-## Project Introduction
-The goal of this project was to implement an autonomous delivery system that collects real-time location data using UWB technology to ensure safe navigation to a destination. The system was designed based on the premise that UWB provides more precise positioning than conventional GPS in both indoor and outdoor environments.
-
-### Key Features
-* Real-time Location Tracking: Calculates vehicle position by measuring the distance between UWB Tags and Anchors.
-* Wireless Control and Autonomous Navigation: Controls motors based on data sent from the Sender to the Receiver.
-* Precision Distance Measurement: Utilizes the DW1000 module, which offers lower error margins than traditional sensors.
+> 3학년 캡스톤디자인(공학설계) · 4인 팀 · 2025.03 – 2025.06
+> 담당: 상위 코드 통합, 형상 관리 도입, 측위 오차 데이터 분석
 
 ---
 
-## Hardware Configuration
-* Controller: Arduino Nano / ESP8266
-* Sensor: DW1000 UWB Module
-* Motor: DC Motor & Motor Driver (e.g., L298N)
-* Communication: Data processing via SPI communication
+## 프로젝트 개요
+
+UWB(DW1000) 모듈의 TWR(Two-Way Ranging)로 Tag–Anchor 간 거리를 측정하고, 삼변측량으로 차량 위치를 추정해 목적지까지 주행하는 실내 배송 차량입니다.
+GPS를 쓸 수 없는 실내에서, 사람이나 장애물이 전파를 가리는 NLOS 상황의 측위 오차를 줄이는 것이 핵심 과제였습니다.
 
 ---
 
-## Repository Structure
-* /src: Arduino source code (Sender/Receiver)
-* /docs: Presentation materials, final poster (PDF)
-* /media: Demonstration video (operation check)
-* /libs: Dedicated libraries used in the project
+## 담당 역할과 문제 해결
+
+### 1. 형상 관리 도입으로 통합 지연 해결
+
+- **문제**: 모듈별 구현 후 통합 단계에서 팀원마다 라이브러리 버전이 달랐고, SW 결합도가 높아 통합 주행 테스트가 지연됐습니다.
+- **해결**: Git과 Git Flow를 먼저 학습해 사용 가이드를 정리·공유했습니다. 그동안 다른 팀원은 SW 아키텍처를 공부해 계층화·GRASP 적용을 맡았습니다.
+- **결과**: 형상 관리 기반이 잡힌 뒤 계층화 설계를 안정적으로 적용했고, 개발 속도가 약 2배 빨라졌습니다(Git 도입 후 1주 만에 완성 모듈 1개 → 2개).
+
+### 2. 데이터 분석으로 필터 설계 근거 제시
+
+- **문제**: 측위 테스트에서 오차가 크게 나타났는데, 근거가 불분명한 단순 임곗값으로 데이터를 전처리하고 있었습니다.
+- **분석**: AI를 활용해 Pandas 기반으로 위치 데이터를 좌표화·시계열화하는 스크립트를 만들고, 시간·위치 관점에서 분석했습니다.
+  평소에는 거리 오차가 고르게 나타나지만, **NLOS 상황에서는 오차가 (+) 방향으로 편향**된다는 점을 확인했습니다.
+- **해결**: 이 근거를 바탕으로 칼만 필터에 **Innovation Gating**을 적용하는 정리 자료를 작성해 필터 담당 팀원에게 전달했습니다.
+- **결과**: 기존 대비 **RMSE 약 24.2% 개선**
+
+> 필터 구현 코드는 팀원 담당 파트라 이 저장소에는 포함되어 있지 않습니다.
 
 ---
 
-## Getting Started
-1. Download or clone this repository.
-2. Add the libraries in the /libs folder to your Arduino libraries directory.
-3. Upload the code from /src/sender and /src/receiver to their respective boards.
-4. Refer to the presentation materials in the /docs folder for hardware wiring diagrams.
+## 하드웨어 구성
+
+- Controller: Arduino Nano / ESP8266
+- Sensor: DW1000 UWB Module
+- Motor: DC Motor & Motor Driver (예: L298N)
+- Communication: SPI
 
 ---
 
-## Project Information
-* Development Period: March 2025 - June 2025
-* Reference Materials: Detailed design processes are documented in the /docs folder.
+## 저장소 구조
+
+| 경로 | 내용 |
+|---|---|
+| `src/sender`, `src/receiver` | Arduino 소스 코드 (Sender / Receiver) |
+| `libs/DW1000-jang` | 프로젝트에서 사용한 DW1000 라이브러리 |
+| `docs/` | 발표 자료, 포스터(PDF) |
+| `media/` | 동작 시연 영상 |
+
+---
+
+## 실행 방법
+
+1. 저장소를 내려받습니다.
+2. `libs/` 폴더의 라이브러리를 Arduino 라이브러리 경로에 추가합니다.
+3. `src/sender`, `src/receiver` 코드를 각 보드에 업로드합니다.
+4. 하드웨어 배선은 `docs/` 폴더의 발표 자료를 참고하세요.
