@@ -41,8 +41,6 @@ flowchart LR
 - Measurements whose innovation (measurement − prediction) exceeds the gate are rejected before the EKF update.
 - Result: path tracking RMSE improved by about **24.2%**.
 
-> The filter implementation is not included in this repository.
-
 ---
 
 ## Hardware
@@ -57,16 +55,6 @@ flowchart LR
 
 | Path | Description |
 |---|---|
-| `src/sender`, `src/receiver` | Arduino source code (sender / receiver) |
 | `libs/DW1000-jang` | DW1000 library used in the project |
 | `docs/` | Slides, poster (PDF), images |
 | `media/` | Demo videos |
-
----
-
-## How to Run
-
-1. Clone the repository.
-2. Add the library in `libs/` to the Arduino library path.
-3. Upload `src/sender` and `src/receiver` to each board.
-4. See the slides in `docs/` for hardware wiring.
