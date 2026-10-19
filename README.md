@@ -1,61 +1,72 @@
-# UWB 정밀 측위 기반 실내 자율주행 배송 차량
+# UWB-based Indoor Autonomous Medicine Delivery Vehicle
 
-> 3학년 캡스톤디자인(공학설계) · 4인 팀 · 2025.03 – 2025.06
->
-> 담당: 상위 코드 통합, 형상 관리 도입, 측위 오차 데이터 분석
+> Capstone Design · 2025.03 – 2025.06 · 4-person team
 
----
+An indoor delivery vehicle for hospital-like environments where GPS is unavailable. The vehicle position is estimated from UWB (DW1000) ranging to three fixed anchors, and the vehicle drives from a medicine dispenser to the target room.
 
-## 프로젝트 개요
-
-UWB(DW1000) 모듈의 TWR(Two-Way Ranging)로 Tag–Anchor 간 거리를 측정하고, 삼변측량으로 차량 위치를 추정해 목적지까지 주행하는 실내 배송 차량입니다.
-GPS를 쓸 수 없는 실내에서, 사람이나 장애물이 전파를 가리는 NLOS 상황의 측위 오차를 줄이는 것이 핵심 과제였습니다.
-
----
-
-## 담당 역할과 문제 해결
-
-### 1. 형상 관리 도입으로 통합 지연 해결
-
-- **문제**: 모듈별 구현 후 통합 단계에서 팀원마다 라이브러리 버전이 달랐고, SW 결합도가 높아 통합 주행 테스트가 지연됐습니다.
-- **해결**: Git과 Git Flow를 먼저 학습해 사용 가이드를 정리·공유했습니다. 그동안 다른 팀원은 SW 아키텍처를 공부해 계층화·GRASP 적용을 맡았습니다.
-- **결과**: 형상 관리 기반이 잡힌 뒤 계층화 설계를 안정적으로 적용했고, 개발 속도가 약 2배 빨라졌습니다(Git 도입 후 1주 만에 완성 모듈 1개 → 2개).
-
-### 2. 데이터 분석으로 필터 설계 근거 제시
-
-- **문제**: 측위 테스트에서 오차가 크게 나타났는데, 근거가 불분명한 단순 임곗값으로 데이터를 전처리하고 있었습니다.
-- **분석**: AI를 활용해 Pandas 기반으로 위치 데이터를 좌표화·시계열화하는 스크립트를 만들고, 시간·위치 관점에서 분석했습니다.
-  평소에는 거리 오차가 고르게 나타나지만, **NLOS 상황에서는 오차가 (+) 방향으로 편향**된다는 점을 확인했습니다.
-- **해결**: 이 근거를 바탕으로 칼만 필터에 **Innovation Gating**을 적용하는 정리 자료를 작성해 필터 담당 팀원에게 전달했습니다.
-- **결과**: 기존 대비 **RMSE 약 24.2% 개선**
-
-> 필터 구현 코드는 팀원 담당 파트라 이 저장소에는 포함되어 있지 않습니다.
+<p align="center">
+  <img src="docs/vehicle_dispenser.jpg" width="380" alt="Mecanum-wheel delivery vehicle and medicine dispenser">
+  <img src="docs/test_field.jpg" width="380" alt="Indoor test field with UWB anchors and floor path">
+  <br><sub>Left: mecanum-wheel vehicle and medicine dispenser · Right: indoor test field</sub>
+</p>
 
 ---
 
-## 하드웨어 구성
+## System Architecture
+
+```mermaid
+flowchart LR
+    A["Server<br/>patient ID · medicine type"] --> B["UWB Anchors ×3<br/>range to vehicle (TWR)"]
+    B --> C["Delivery Vehicle<br/>position estimation → navigation"]
+    C --> D["Medicine Dispenser<br/>dispense → drive to room"]
+```
+
+---
+
+## Localization Pipeline
+
+### 1. Ranging: TWR (Two-Way Ranging)
+- Tag (vehicle) and each anchor exchange UWB messages; the distance is computed from the round-trip time of flight.
+
+### 2. Positioning: Trilateration
+- The (x, y) position of the tag is computed from the ranges R1, R2, R3 to three anchors at known positions.
+
+<p align="center">
+  <img src="docs/trilateration.png" width="520" alt="Trilateration layout with three anchors and the tag">
+  <br><sub>Anchor layout and trilateration (test field 3 m × 1.4 m)</sub>
+</p>
+
+### 3. Filtering: EKF + Innovation Gating
+- Under NLOS (Non-Line-of-Sight) conditions, range errors are biased in the positive (+) direction.
+- Measurements whose innovation (measurement − prediction) exceeds the gate are rejected before the EKF update.
+- Result: path tracking RMSE improved by about **24.2%**.
+
+> The filter implementation is not included in this repository.
+
+---
+
+## Hardware
 
 - Controller: Arduino Nano / ESP8266
-- Sensor: DW1000 UWB Module
-- Motor: DC Motor & Motor Driver (예: L298N)
-- Communication: SPI
+- Ranging: DW1000 UWB module (SPI)
+- Drive: mecanum wheels, DC motors and motor driver (L298N)
 
 ---
 
-## 저장소 구조
+## Repository Structure
 
-| 경로 | 내용 |
+| Path | Description |
 |---|---|
-| `src/sender`, `src/receiver` | Arduino 소스 코드 (Sender / Receiver) |
-| `libs/DW1000-jang` | 프로젝트에서 사용한 DW1000 라이브러리 |
-| `docs/` | 발표 자료, 포스터(PDF) |
-| `media/` | 동작 시연 영상 |
+| `src/sender`, `src/receiver` | Arduino source code (sender / receiver) |
+| `libs/DW1000-jang` | DW1000 library used in the project |
+| `docs/` | Slides, poster (PDF), images |
+| `media/` | Demo videos |
 
 ---
 
-## 실행 방법
+## How to Run
 
-1. 저장소를 내려받습니다.
-2. `libs/` 폴더의 라이브러리를 Arduino 라이브러리 경로에 추가합니다.
-3. `src/sender`, `src/receiver` 코드를 각 보드에 업로드합니다.
-4. 하드웨어 배선은 `docs/` 폴더의 발표 자료를 참고하세요.
+1. Clone the repository.
+2. Add the library in `libs/` to the Arduino library path.
+3. Upload `src/sender` and `src/receiver` to each board.
+4. See the slides in `docs/` for hardware wiring.
