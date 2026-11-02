@@ -36,10 +36,11 @@ flowchart LR
   <br><sub>Anchor layout and trilateration (test field 3 m × 1.4 m)</sub>
 </p>
 
-### 3. Filtering: EKF + Innovation Gating
-- Under NLOS (Non-Line-of-Sight) conditions, range errors are biased in the positive (+) direction.
-- Measurements whose innovation (measurement − prediction) exceeds the gate are rejected before the EKF update.
-- Result: path tracking RMSE improved by about **24.2%**.
+### 3. Filtering: Moving Average + g-h Filter
+- A moving average and a g-h filter were applied to smooth the estimated coordinates.
+- Coordinate jumps were not fully resolved within the project; this was listed as a limitation in the final presentation.
+
+> **Post-project study (2026-09):** The raw measurement logs were not kept. I reconstructed the final trajectory (71 points) from the presentation plot and computed the path-tracking error against the ideal path (RMSE ≈ 8.4 cm), then studied an EKF with one-sided innovation gating for NLOS errors. Without raw logs the improvement could not be verified, so no improvement figure is claimed.
 
 ---
 
